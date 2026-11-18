@@ -1,0 +1,4 @@
+func f(x)
+  if x
+    print 1
+end

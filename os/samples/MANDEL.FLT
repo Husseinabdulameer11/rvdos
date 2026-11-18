@@ -1,0 +1,32 @@
+# mandel.flt -- the Mandelbrot set. This CPU has
+# no floating point, so numbers are fixed point:
+# 4096 means 1.0.
+func shades()
+  for i = 0 to 15
+    var r = i * 16, g = i * 6, b = 255 - i * 12
+    palette(16 + i, r << 16 | g << 8 | b)
+  end
+end
+
+shades()
+cls()
+for py = 0 to 49
+  var y0 = py * 164 - 4096          # -1.0 .. 1.0
+  for px = 0 to 79
+    var x0 = px * 179 - 10240       # -2.5 .. 1.0
+    var x = 0, y = 0, i = 0
+    while i < 32 and x * x + y * y < 16777216 * 4
+      var t = ((x * x - y * y) >> 12) + x0
+      y = ((2 * x * y) >> 12) + y0
+      x = t
+      i += 1
+    end
+    if i == 32
+      rect(px * 4, py * 4, 4, 4, 0)
+    else
+      rect(px * 4, py * 4, 4, 4, 16 + (i & 15))
+    end
+  end
+end
+getkey()
+cls()

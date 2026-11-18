@@ -1,0 +1,43 @@
+func fib(n)
+  if n < 2
+    return n
+  end
+  return fib(n - 1) + fib(n - 2)
+end
+print fib(15)
+count = 100
+func bump()
+  count += 1
+end
+func shadow()
+  var count = 5
+  count += 1
+  return count
+end
+bump()
+bump()
+print count, " ", shadow(), " ", count
+print later(3)
+func later(x)
+  return x * 10
+end
+func nothing()
+end
+print nothing()
+func gcd(a, b)
+  while b != 0
+    var t = b
+    b = a % b
+    a = t
+  end
+  return a
+end
+print gcd(1071, 462)
+func fact(n)
+  var r = 1
+  for i = 2 to n
+    r *= i
+  end
+  return r
+end
+print fact(10), " ", fact(12)

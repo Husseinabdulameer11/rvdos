@@ -1,0 +1,17 @@
+# guess.flt -- guess the number
+var secret = rnd(100) + 1
+var tries = 0
+print "I'm thinking of a number 1-100."
+while true
+  print "Your guess? ";
+  var g = input()
+  tries += 1
+  if g < secret
+    print "Higher!"
+  elif g > secret
+    print "Lower!"
+  else
+    print "Got it in ", tries, " tries."
+    break
+  end
+end

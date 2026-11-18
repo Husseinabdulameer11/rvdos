@@ -1,0 +1,6 @@
+# hello.flt -- your first Flint program
+# Change it: ED HELLO.FLT
+print "Hello from Flint!"
+for i = 1 to 5
+  print i, " squared is ", i * i
+end

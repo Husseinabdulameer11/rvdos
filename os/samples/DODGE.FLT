@@ -1,0 +1,65 @@
+# dodge.flt -- dodge the falling blocks
+# A / D to move, Q to quit
+var W = 30, H = 22
+var rocks[W]     # rock height per column, -1 = none
+var px = W / 2, score = 0, alive = true
+
+func draw_border()
+  for r = 0 to H
+    fill(0, r, 5)
+    fill(W + 1, r, 5)
+  end
+end
+
+cls()
+palette(5, 0x404060)
+palette(6, 0xFF5030)
+palette(7, 0x30FF60)
+for c = 0 to W - 1
+  rocks[c] = -1
+end
+draw_border()
+at(W + 4, 2)
+print "DODGE"
+at(W + 4, 4)
+print "A/D move"
+at(W + 4, 5)
+print "Q quit"
+
+while alive
+  # player input
+  var k = key()
+  if k == 'a' and px > 0
+    fill(px + 1, H, 0)
+    px -= 1
+  elif k == 'd' and px < W - 1
+    fill(px + 1, H, 0)
+    px += 1
+  elif k == 'q'
+    break
+  end
+  # move the rocks down, maybe start a new one
+  for c = 0 to W - 1
+    if rocks[c] >= 0
+      fill(c + 1, rocks[c], 0)
+      rocks[c] += 1
+      if rocks[c] == H and c == px
+        alive = false
+      elif rocks[c] > H
+        rocks[c] = -1
+        score += 1
+      else
+        fill(c + 1, rocks[c], 6)
+      end
+    elif rnd(40) == 0
+      rocks[c] = 0
+    end
+  end
+  fill(px + 1, H, 7)
+  at(W + 4, 8)
+  print "SCORE ", score
+  wait(60)
+end
+at(W + 4, 10)
+print "GAME OVER"
+at(0, H + 2)

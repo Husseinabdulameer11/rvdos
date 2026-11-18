@@ -1,0 +1,86 @@
+# flint.gram -- the Flint language, for gram.
+#
+# Flint is compiled one source line at a time: the compiler (flint.c)
+# keeps track of which if/while/for/func block is open and patches the
+# jumps when it sees `end`. So this grammar describes ONE line, which keeps
+# the parse tree -- and the RAM it needs -- tiny on a 64 KB machine.
+#
+#   gramgen flint.gram flint gen      # -> gen/flint_grammar.{h,c}
+
+line     <- stmt? !. ;
+
+stmt     <^ funcdef / ifst / elifst / elsest / endst / whilest / forst
+          / returnst / breakst / contst / varst / printst / assign / callst ;
+
+funcdef  <- ~FUNC ident ~'(' params? ~')' ;
+params   <- ident (~',' ident)* ;
+ifst     <- ~IF expr ;
+elifst   <- ~ELIF expr ;
+elsest   <- ~ELSE ;
+endst    <- ~END ;
+whilest  <- ~WHILE expr ;
+forst    <- ~FOR ident ~'=' expr ~TO expr (~STEP expr)? ;
+returnst <- ~RETURN expr? ;
+breakst  <- ~BREAK ;
+contst   <- ~CONTINUE ;
+varst    <- ~VAR vitem (~',' vitem)* ;
+vitem    <^ vararray / varinit / ident ;
+vararray <- ident ~'[' expr ~']' ;
+varinit  <- ident ~'=' expr ;
+printst  <- ~PRINT (pitem (~',' pitem)*)? semi? ;
+pitem    <^ string / expr ;
+assign   <- target assignop expr ;
+target   <^ index / ident ;
+callst   <- call ;
+
+# Expressions are a flat chain: operand (operator operand)*. The
+# compiler applies precedence itself (precedence climbing in flint.c).
+# One grammar level instead of eleven matters here: gram's parser recurses
+# on the C stack at ~200 bytes per rule, and RVDOS has a 6 KB stack, so
+# each `(` costs 3 rule levels instead of 14.
+expr     <^ unary (binop unary)* ;
+unary    <^ notop / neg / bnot / atom ;
+notop    <- ~NOT unary ;
+neg      <- ~'-' unary ;
+bnot     <- ~'~' unary ;
+atom     <^ hexnum / number / charlit / true / false
+          / call / index / ident / ~'(' expr ~')' ;
+call     <- ident ~'(' args? ~')' ;
+args     <- expr (~',' expr)* ;
+index    <- ident ~'[' expr ~']' ;
+
+# Tokens: no whitespace skipping inside; each match is one leaf.
+assignop <= '+=' / '-=' / '*=' / '/=' / '%=' / '=' !'=' ;
+binop    <= '==' / '!=' / '<=' / '>=' / '<<' / '>>' / '<' / '>'
+          / [+\-*/%&|^] / ('and' / 'or') !idchar ;
+hexnum   <= '0' [xX] [0-9a-fA-F]+ ;
+number   <= [0-9]+ ;
+charlit  <= '\'' ('\\' . / [^'\\]) '\'' ;
+string   <= '"' ('\\' . / [^"\\\n])* '"' ;
+semi     <= ';' ;
+true     <= 'true' !idchar ;
+false    <= 'false' !idchar ;
+ident    <= !keyword [A-Za-z_] [A-Za-z0-9_]* ;
+
+keyword  <= ('func' / 'if' / 'elif' / 'else' / 'end' / 'while' / 'for'
+          / 'to' / 'step' / 'return' / 'break' / 'continue' / 'var'
+          / 'print' / 'and' / 'or' / 'not' / 'true' / 'false') !idchar ;
+FUNC     <= 'func' !idchar ;
+IF       <= 'if' !idchar ;
+ELIF     <= 'elif' !idchar ;
+ELSE     <= 'else' !idchar ;
+END      <= 'end' !idchar ;
+WHILE    <= 'while' !idchar ;
+FOR      <= 'for' !idchar ;
+TO       <= 'to' !idchar ;
+STEP     <= 'step' !idchar ;
+RETURN   <= 'return' !idchar ;
+BREAK    <= 'break' !idchar ;
+CONTINUE <= 'continue' !idchar ;
+VAR      <= 'var' !idchar ;
+PRINT    <= 'print' !idchar ;
+NOT      <= 'not' !idchar ;
+idchar   <= [A-Za-z0-9_] ;
+
+# Between tokens: spaces, tabs, and # comments to end of line.
+skip     <= ([ \t\r] / '#' [^\n]*)* ;

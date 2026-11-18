@@ -1,0 +1,3 @@
+Error in line 2: syntax error, expected a value
+  x = (3 +
+          ^

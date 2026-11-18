@@ -1,0 +1,35 @@
+# Vivado
+/build/
+.Xil/
+*.jou
+*.log
+*.str
+vivado*.backup.*
+clockInfo.txt
+usage_statistics_webtalk.*
+
+# compiler and tool outputs (os/build_os.sh, run.sh, the tests)
+*.elf
+*.bin
+*.map
+*.o
+*.exe
+*.dll
+os/gen/
+os/asm/
+os/bin2hex
+os/file2c
+tools/rvemu
+tools/rvemu_headless
+
+# simulation
+*.cf
+*.ghw
+*.vcd
+tb_rvdos_fb.txt
+
+# the emulator's drive A:
+*.disk
+
+# os/rvdos_text.hex and os/rvdos_rodata.hex stay tracked on purpose: with
+# them, building the bitstream needs only Vivado, not the RISC-V toolchain.

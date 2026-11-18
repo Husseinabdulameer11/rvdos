@@ -1,0 +1,6 @@
+print (((((((((1)))))))))
+var big[1400]
+big[1399] = 5
+print big[1399] + len(big)
+var more[200]
+print "unreachable"

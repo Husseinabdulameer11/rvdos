@@ -1,0 +1,65 @@
+# hussein.flt -- big HELLO HUSSEIN with a red and white border
+palette(4, 0x000000)
+palette(5, 0xFFFFFF)
+palette(6, 0xFF0000)
+
+# letters are 5x5; each row is 5 bits, five rows packed in one number
+func big(ch, x, y)
+  var v = 0
+  if ch == 'H'
+    v = 18415153
+  elif ch == 'E'
+    v = 33061407
+  elif ch == 'L'
+    v = 17318431
+  elif ch == 'O'
+    v = 15255086
+  elif ch == 'U'
+    v = 18400814
+  elif ch == 'S'
+    v = 16267326
+  elif ch == 'I'
+    v = 32641183
+  elif ch == 'N'
+    v = 18667121
+  end
+  for r = 0 to 4
+    var bits = (v >> (20 - 5 * r)) & 31
+    for c = 0 to 4
+      if bits & (16 >> c)
+        fill(x + c, y + r, 5)
+      end
+    end
+  end
+end
+
+# black screen, red and white checks around the edge
+for row = 0 to 24
+  for col = 0 to 52
+    var c = 4
+    if row == 0 or row == 24 or col == 0 or col == 52
+      c = 5
+      if (row + col) % 2 == 0
+        c = 6
+      end
+    end
+    fill(col, row, c)
+  end
+end
+
+big('H', 12, 6)
+big('E', 18, 6)
+big('L', 24, 6)
+big('L', 30, 6)
+big('O', 36, 6)
+
+big('H', 6, 14)
+big('U', 12, 14)
+big('S', 18, 14)
+big('S', 24, 14)
+big('E', 30, 14)
+big('I', 36, 14)
+big('N', 42, 14)
+
+getkey()
+cls()

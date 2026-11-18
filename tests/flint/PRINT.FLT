@@ -1,0 +1,8 @@
+print "a", "b", 1, 2
+print "no newline";
+print " -> joined"
+print "tab\there", " quote\"q\""
+print
+print -42, " ", 0, " ", 1000000
+x = 7
+print "x=", x, ";", " done"
